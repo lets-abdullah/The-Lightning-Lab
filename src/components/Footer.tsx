@@ -31,28 +31,28 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
           
           <div className="flex items-center justify-center gap-3">
-            <Truck className="w-6 h-6 text-[#b32318] flex-shrink-0" />
+            <Truck className="w-6 h-6 text-[#b32318] shrink-0" />
             <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-white font-montserrat">
               FREE SHIPPING ON ORDERS $99+
             </span>
           </div>
 
           <div className="flex items-center justify-center gap-3">
-            <Gift className="w-6 h-6 text-[#b32318] flex-shrink-0" />
+            <Gift className="w-6 h-6 text-[#b32318] shrink-0" />
             <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-white font-montserrat">
               AUTOMATIC VOLUME DISCOUNT
             </span>
           </div>
 
           <div className="flex items-center justify-center gap-3">
-            <RotateCcw className="w-6 h-6 text-[#b32318] flex-shrink-0" />
+            <RotateCcw className="w-6 h-6 text-[#b32318] shrink-0" />
             <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-white font-montserrat">
               EASY &amp; FREE RETURNS
             </span>
           </div>
 
           <div className="flex items-center justify-center gap-3">
-            <ShieldCheck className="w-6 h-6 text-[#b32318] flex-shrink-0" />
+            <ShieldCheck className="w-6 h-6 text-[#b32318] shrink-0" />
             <span className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-white font-montserrat">
               SAFE &amp; SECURE CHECKOUT
             </span>
@@ -185,7 +185,7 @@ export default function Footer() {
 
             {submitted ? (
               <div className="bg-emerald-950/70 border border-emerald-600 p-3 rounded text-emerald-300 text-xs flex items-center gap-2">
-                <Check className="w-4 h-4 flex-shrink-0" />
+                <Check className="w-4 h-4 shrink-0" />
                 <span>Thank you! Your coupon code is <strong>SAVE10LED</strong></span>
               </div>
             ) : (
@@ -196,7 +196,7 @@ export default function Footer() {
                   placeholder="enter your email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white text-gray-900 placeholder-gray-400 text-xs px-3.5 py-2.5 rounded-none border border-transparent focus:outline-none"
+                  className="w-full bg-white text-gray-900 placeholder:text-gray-400 text-xs px-3.5 py-2.5 rounded-none border border-transparent focus:outline-none"
                 />
                 <button
                   type="submit"
