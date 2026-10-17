@@ -1,41 +1,21 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import ProductCard from './ProductCard';
 import { showcaseProducts, ProductItem } from '../data/storeData';
 import { Product } from '../types/store';
 
 interface NewArrivalsBestSellersProps {
-  onQuickView: (product: Product) => void;
+  onQuickView?: (product: Product) => void;
 }
 
-export default function NewArrivalsBestSellers({ onQuickView }: NewArrivalsBestSellersProps) {
+export default function NewArrivalsBestSellers({ }: NewArrivalsBestSellersProps) {
   // 8 best-selling products (2 full rows of 4 cards) across top commercial, outdoor, and residential fixtures
   const bestSellerIds = ['p1', 'p2', 'p4', 'p9', 'p3', 'p10', 'p11', 'p17'];
   const products = bestSellerIds
     .map((id) => showcaseProducts.find((p) => p.id === id))
     .filter((p): p is ProductItem => Boolean(p));
-
-  const handleSelectOptions = (item: ProductItem) => {
-    const priceNum = parseFloat(item.salePrice.replace('$', ''));
-    const origPriceNum = parseFloat(item.originalPrice.replace('$', ''));
-    const prod: Product = {
-      id: item.id,
-      title: item.title,
-      description: "Specification grade luminaire engineered with DLC 5.1 Premium certification and 0-10V dimmable drivers.",
-      category: item.category,
-      tab: item.tab === 'commercial' ? 'commercial' : item.tab === 'outdoor' ? 'outdoor' : 'sheets',
-      price: priceNum,
-      originalPrice: origPriceNum,
-      rating: 4.9,
-      reviewsCount: 38,
-      image: item.image,
-      badge: item.badge || 'Sale',
-      specs: ["DLC 5.1 Premium", "5CCT Selectable", "0-10V Dimmable", "5-Yr Warranty"],
-      inStock: true
-    };
-    onQuickView(prod);
-  };
 
   return (
     <section className="w-full bg-white py-12 sm:py-16 border-t border-gray-100">
@@ -56,19 +36,18 @@ export default function NewArrivalsBestSellers({ onQuickView }: NewArrivalsBestS
             <ProductCard
               key={product.id}
               product={product}
-              onSelectOptions={handleSelectOptions}
             />
           ))}
         </div>
 
-        {/* Show More Button */}
+        {/* Show More Button linking to /collections/all */}
         <div className="text-center mt-10 sm:mt-12">
-          <button
-            type="button"
+          <Link
+            href="/collections/all"
             className="inline-block bg-white hover:bg-black text-black hover:text-white border border-black py-2.5 px-10 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors rounded-none focus:outline-none cursor-pointer font-montserrat"
           >
             Show More
-          </button>
+          </Link>
         </div>
 
       </div>

@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Product } from '../types/store';
 
 interface SheetRollItem {
   id: string;
+  handle: string;
   title: string;
   category: string;
   originalPrice: string;
@@ -14,7 +16,7 @@ interface SheetRollItem {
 }
 
 interface SheetRollsCatalogProps {
-  onAddToCart: (product: Product, quantity: number) => void;
+  onAddToCart?: (product: Product, quantity: number) => void;
 }
 
 export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProps) {
@@ -23,6 +25,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
   const sheetProducts: SheetRollItem[] = [
     {
       id: "sr1",
+      handle: "cob-led-strip-24v-high-density-warm-white",
       title: "16.4ft x 9.45in Giant LED Sheet Roll, 24V 6000K Cool White Flexible Cuttable Dimmable LED Backlight Panel, Paper-T...",
       category: "LED Sheet Roll",
       originalPrice: "$220.00",
@@ -32,6 +35,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
     },
     {
       id: "sr2",
+      handle: "tunable-white-cob-led-strip-24v",
       title: "16.4ft X 9.45in Giant LED Sheet Roll, 24V 3000K Warm White Flexible Cuttable Dimmable LED Backlight Panel, Paper-T...",
       category: "LED Sheet Roll",
       originalPrice: "$220.00",
@@ -41,6 +45,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
     },
     {
       id: "sr3",
+      handle: "rgbw-4-in-1-led-strip-light-24v",
       title: "16.4ft X 9.45in Giant LED Sheet Roll 24V Flexible Cuttable Dimmable LED Backlight Panel,...",
       category: "LED Sheet Roll",
       originalPrice: "$275.00",
@@ -50,6 +55,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
     },
     {
       id: "sr4",
+      handle: "digital-addressable-rgb-pixel-strip",
       title: "16.4FT X 9.45IN Giant RGBW LED Sheet Roll, 24V Flexible Cuttable Dimmable LED Backlight Panel, Paper-Thin Plug & Play...",
       category: "LED Sheet Roll",
       originalPrice: "$302.50",
@@ -60,24 +66,40 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
   ];
 
   const handleAdd = (item: SheetRollItem) => {
-    const priceNum = parseFloat(item.salePrice.replace('$', ''));
-    const origPriceNum = parseFloat(item.originalPrice.replace('$', ''));
-    const prod: Product = {
-      id: item.id,
-      title: item.title,
-      description: "Ultra-thin flexible LED backlight matrix sheet engineered for luxury backlit countertops and architectural features.",
-      category: item.category,
-      tab: 'sheets',
-      price: priceNum,
-      originalPrice: origPriceNum,
-      rating: 4.9,
-      reviewsCount: 24,
-      image: item.image,
-      badge: item.badge,
-      specs: ["24V DC", "Cuttable Grid", "Dimmable", "Paper-Thin"],
-      inStock: true
-    };
-    onAddToCart(prod, 1);
+    if (onAddToCart) {
+      const priceNum = parseFloat(item.salePrice.replace('$', ''));
+      const origPriceNum = parseFloat(item.originalPrice.replace('$', ''));
+      const prod: Product = {
+        id: item.id,
+        title: item.title,
+        description: "Ultra-thin flexible LED backlight matrix sheet engineered for luxury backlit countertops and architectural features.",
+        category: item.category,
+        tab: 'sheets',
+        price: priceNum,
+        originalPrice: origPriceNum,
+        rating: 4.9,
+        reviewsCount: 24,
+        image: item.image,
+        badge: item.badge,
+        specs: ["24V DC", "Cuttable Grid", "Dimmable", "Paper-Thin"],
+        inStock: true
+      };
+      onAddToCart(prod, 1);
+    }
+  };
+
+  const getTabCollectionUrl = () => {
+    switch (activeTab) {
+      case 'sheets':
+      case 'strips':
+        return '/collections/led-strip-lights';
+      case 'supplies':
+        return '/collections/accessories';
+      case 'controllers':
+        return '/collections/smart-lighting';
+      default:
+        return '/collections/led-strip-lights';
+    }
   };
 
   return (
@@ -90,7 +112,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
           <button
             type="button"
             onClick={() => setActiveTab('sheets')}
-            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'sheets'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -102,7 +124,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
           <button
             type="button"
             onClick={() => setActiveTab('strips')}
-            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'strips'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -114,7 +136,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
           <button
             type="button"
             onClick={() => setActiveTab('supplies')}
-            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'supplies'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -126,7 +148,7 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
           <button
             type="button"
             onClick={() => setActiveTab('controllers')}
-            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-xs sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'controllers'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -137,14 +159,14 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
 
         </div>
 
-        {/* 4-Column Product Cards (2 cols on mobile) with 'Add To Cart' Button */}
+        {/* 4-Column Product Cards (2 cols on mobile) with link to Product Detail */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {sheetProducts.map((item) => (
             <div key={item.id} className="bg-white flex flex-col justify-between p-2 sm:p-3 relative group transition-all">
               
-              {/* Product Image - Click adds to cart */}
-              <div 
-                onClick={() => handleAdd(item)}
+              {/* Product Image - Click navigates to product detail */}
+              <Link 
+                href={`/products/${item.handle}`}
                 className="relative aspect-square w-full flex items-center justify-center p-2 mb-3 cursor-pointer select-none"
               >
                 {item.badge && (
@@ -158,13 +180,16 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
                   className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                   loading="lazy"
                 />
-              </div>
+              </Link>
 
               {/* Title & Price */}
               <div className="flex-1 flex flex-col justify-between">
-                <h3 className="text-xs sm:text-sm font-normal text-gray-900 leading-snug line-clamp-2 min-h-10">
+                <Link
+                  href={`/products/${item.handle}`}
+                  className="text-xs sm:text-sm font-normal text-gray-900 leading-snug line-clamp-2 min-h-10 hover:text-[#8B1812] transition-colors block"
+                >
                   {item.title}
-                </h3>
+                </Link>
 
                 <div className="mt-3 mb-4 flex items-baseline gap-2 text-xs sm:text-sm">
                   <span className="line-through text-black font-extrabold">
@@ -175,14 +200,13 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
                   </span>
                 </div>
 
-                {/* 'Add To Cart' Full-width Button */}
-                <button
-                  type="button"
-                  onClick={() => handleAdd(item)}
-                  className="w-full bg-white hover:bg-black text-black hover:text-white border border-black py-2.5 px-4 text-xs sm:text-sm font-extrabold tracking-wide uppercase transition-colors rounded-none focus:outline-none cursor-pointer"
+                {/* 'Select Options' Full-width Button */}
+                <Link
+                  href={`/products/${item.handle}`}
+                  className="w-full bg-white hover:bg-black text-black hover:text-white border border-black py-2.5 px-4 text-xs sm:text-sm font-extrabold tracking-wide uppercase transition-colors rounded-none focus:outline-none cursor-pointer text-center block"
                 >
-                  Add To Cart
-                </button>
+                  Select Options
+                </Link>
               </div>
 
             </div>
@@ -191,12 +215,12 @@ export default function SheetRollsCatalog({ onAddToCart }: SheetRollsCatalogProp
 
         {/* Centered Show More Button */}
         <div className="text-center mt-10 sm:mt-12">
-          <button
-            type="button"
+          <Link
+            href={getTabCollectionUrl()}
             className="inline-block bg-white hover:bg-black text-black hover:text-white border border-black py-2.5 px-10 text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-colors rounded-none focus:outline-none cursor-pointer"
           >
             Show More
-          </button>
+          </Link>
         </div>
 
       </div>

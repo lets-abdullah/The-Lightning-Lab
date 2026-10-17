@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { categoriesCatalog } from '../data/storeData';
 
 export default function CategoryGrid() {
@@ -20,14 +21,9 @@ export default function CategoryGrid() {
         {/* 12-Item Clean Grid: 4 columns x 3 rows */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10 sm:gap-y-12 mt-10">
           {categoriesCatalog.map((category) => (
-            <a
+            <Link
               key={category.id}
-              href="#products"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('products');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+              href={category.link}
               className="group flex flex-col items-center text-center cursor-pointer select-none"
             >
               {/* Product fixture isolated photo - Full uncropped display */}
@@ -44,7 +40,7 @@ export default function CategoryGrid() {
               <h3 className="mt-3 text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#8B1812] transition-colors font-montserrat">
                 {category.name}
               </h3>
-            </a>
+            </Link>
           ))}
         </div>
 

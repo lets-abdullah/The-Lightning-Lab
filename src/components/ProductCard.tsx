@@ -1,24 +1,25 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ProductItem } from '../data/storeData';
-import { Product } from '../types/store';
 
 interface ProductCardProps {
   product: ProductItem;
-  onSelectOptions: (productItem: ProductItem) => void;
+  onSelectOptions?: (productItem: ProductItem) => void;
 }
 
 export default function ProductCard({
   product,
-  onSelectOptions
 }: ProductCardProps) {
+  const productUrl = `/products/${product.handle || '2x4-led-flat-panel-selectable-wattage-cct'}`;
+
   return (
     <div className="bg-white flex flex-col justify-between p-2 sm:p-3 relative group transition-all">
       
-      {/* Top Image Container - Click opens QuickView */}
-      <div 
-        onClick={() => onSelectOptions(product)}
+      {/* Top Image Container - Click navigates to Product Page */}
+      <Link 
+        href={productUrl}
         className="relative aspect-square w-full flex items-center justify-center p-2 mb-3 cursor-pointer select-none"
       >
         {/* Red Square 'Sale' Badge in top-left */}
@@ -34,18 +35,18 @@ export default function ProductCard({
           className="max-h-full max-w-full w-auto h-auto object-contain transition-transform duration-300 ease-out group-hover:scale-105"
           loading="lazy"
         />
-      </div>
+      </Link>
 
       {/* Product Information */}
       <div className="flex-1 flex flex-col justify-between">
         
-        {/* Title (2 lines) - Click opens QuickView */}
-        <h3 
-          onClick={() => onSelectOptions(product)}
-          className="text-xs sm:text-sm font-normal text-gray-900 leading-snug line-clamp-2 min-h-10 cursor-pointer hover:text-[#8B1812] transition-colors"
+        {/* Title (2 lines) - Click navigates to Product Page */}
+        <Link 
+          href={productUrl}
+          className="text-xs sm:text-sm font-normal text-gray-900 leading-snug line-clamp-2 min-h-10 cursor-pointer hover:text-[#8B1812] transition-colors block"
         >
           {product.title}
-        </h3>
+        </Link>
 
         {/* Pricing */}
         <div className="mt-3 mb-4 flex items-baseline gap-1.5 text-xs sm:text-sm">
@@ -64,14 +65,13 @@ export default function ProductCard({
           </span>
         </div>
 
-        {/* Full-width 'Select Options' Button */}
-        <button
-          type="button"
-          onClick={() => onSelectOptions(product)}
-          className="w-full bg-white hover:bg-black text-black hover:text-white border border-black py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-sm font-bold tracking-wide uppercase transition-colors rounded-none focus:outline-none cursor-pointer font-montserrat"
+        {/* Full-width 'Select Options' Button - Click navigates to Product Page */}
+        <Link
+          href={productUrl}
+          className="w-full bg-white hover:bg-black text-black hover:text-white border border-black py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-sm font-bold tracking-wide uppercase transition-colors rounded-none focus:outline-none cursor-pointer font-montserrat text-center block"
         >
           Select Options
-        </button>
+        </Link>
 
       </div>
 

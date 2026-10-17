@@ -1,31 +1,56 @@
-import './globals.css';
-import { Metadata } from 'next';
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { AnnouncementBar } from "@/components/layout/announcement-bar";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Toaster } from "@/components/ui/sonner";
+import { CartProvider } from "@/components/cart/cart-provider";
+import { CartDrawer } from "@/components/cart/cart-drawer";
+import { SessionProvider } from "next-auth/react";
+import { getCartIfExists } from "@/lib/cart/session";
+import { pickCrossSell } from "@/lib/cart/cross-sell";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: 'The Lightning Lab | Commercial & Residential LED Lighting',
-  description: 'The Lightning Lab offers high quality LED lighting solutions for commercial and residential spaces, both indoor and outdoor. Bulk discounts, DLC Premium & UL Listed fixtures.',
-  icons: {
-    icon: '/images/logo.png',
+  title: {
+    default: "The Lightning Lab | Commercial & Industrial LED Lighting",
+    template: "%s | The Lightning Lab",
   },
+  description:
+    "Commercial LED lighting fixtures, DLC 5.1 premium panels, high bays, linear strips, troffers, downlights, and emergency lights with contractor volume pricing.",
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  width: "device-width",
+  initialScale: 1,
+};
+
+import { SiteShell } from "@/components/layout/site-shell";
+
+export default async function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
+  const initialCart = await getCartIfExists();
+  const crossSell = await pickCrossSell(initialCart);
+
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600;1,700;1,900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="antialiased selection:bg-[#B32318] selection:text-white">
-        {children}
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-background text-foreground antialiased flex flex-col">
+        <SessionProvider>
+          <CartProvider initialCart={initialCart}>
+            <SiteShell crossSell={crossSell}>{children}</SiteShell>
+          </CartProvider>
+        </SessionProvider>
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

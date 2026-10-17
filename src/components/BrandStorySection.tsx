@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function BrandStorySection() {
   return (
@@ -39,17 +40,12 @@ export default function BrandStorySection() {
             </p>
 
             <div className="mt-8">
-              <a
-                href="#products"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const el = document.getElementById('products');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
+              <Link
+                href="/collections/all"
                 className="inline-block bg-[#a61c16] hover:bg-[#8B1812] text-white font-bold px-9 py-3.5 rounded-md text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md active:scale-95 font-montserrat cursor-pointer"
               >
                 Explore More
-              </a>
+              </Link>
             </div>
 
           </div>

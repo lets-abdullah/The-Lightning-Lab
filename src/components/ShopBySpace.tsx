@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { shopBySpacesCatalog } from '../data/storeData';
 
 export default function ShopBySpace() {
@@ -20,14 +21,9 @@ export default function ShopBySpace() {
         {/* 8-Card Grid: 4 columns x 2 rows with bottom banner text */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-10">
           {shopBySpacesCatalog.map((space) => (
-            <a
+            <Link
               key={space.id}
-              href="#products"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('products');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+              href={space.link}
               className="group relative block rounded-2xl sm:rounded-3xl overflow-hidden aspect-square bg-gray-900 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               <img
@@ -43,7 +39,7 @@ export default function ShopBySpace() {
                   {space.name}
                 </span>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 

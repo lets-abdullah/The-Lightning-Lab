@@ -1,41 +1,33 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import ProductCard from './ProductCard';
-import { showcaseProducts, ProductItem } from '../data/storeData';
+import { showcaseProducts } from '../data/storeData';
 import { Product } from '../types/store';
 
 interface ProductGridProps {
-  onQuickView: (product: Product) => void;
+  onQuickView?: (product: Product) => void;
 }
 
-export default function ProductGrid({ onQuickView }: ProductGridProps) {
+export default function ProductGrid({ }: ProductGridProps) {
   const [activeTab, setActiveTab] = useState<'commercial' | 'outdoor' | 'residential'>('commercial');
 
   const filteredProducts = showcaseProducts.filter(
     (product) => product.tab === activeTab
   );
 
-  const handleSelectOptions = (item: ProductItem) => {
-    // Map ProductItem to full Product object for QuickView modal
-    const priceNum = parseFloat(item.salePrice.replace('$', ''));
-    const origPriceNum = parseFloat(item.originalPrice.replace('$', ''));
-    const prod: Product = {
-      id: item.id,
-      title: item.title,
-      description: "Specification grade luminaire engineered with DLC 5.1 Premium certification and 0-10V dimmable drivers.",
-      category: item.category,
-      tab: item.tab === 'commercial' ? 'commercial' : item.tab === 'outdoor' ? 'outdoor' : 'sheets',
-      price: priceNum,
-      originalPrice: origPriceNum,
-      rating: 4.9,
-      reviewsCount: 38,
-      image: item.image,
-      badge: item.badge || 'Sale',
-      specs: ["DLC 5.1 Premium", "5CCT Selectable", "0-10V Dimmable", "5-Yr Warranty"],
-      inStock: true
-    };
-    onQuickView(prod);
+  const getCollectionUrl = () => {
+    switch (activeTab) {
+      case 'commercial':
+        return '/collections/commercial-industrial';
+      case 'outdoor':
+        return '/collections/outdoor-lighting';
+      case 'residential':
+        return '/collections/all';
+      default:
+        return '/collections/all';
+    }
   };
 
   return (
@@ -48,7 +40,7 @@ export default function ProductGrid({ onQuickView }: ProductGridProps) {
           <button
             type="button"
             onClick={() => setActiveTab('commercial')}
-            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'commercial'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -60,7 +52,7 @@ export default function ProductGrid({ onQuickView }: ProductGridProps) {
           <button
             type="button"
             onClick={() => setActiveTab('outdoor')}
-            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'outdoor'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -72,7 +64,7 @@ export default function ProductGrid({ onQuickView }: ProductGridProps) {
           <button
             type="button"
             onClick={() => setActiveTab('residential')}
-            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold ${
+            className={`pb-3 text-sm sm:text-base tracking-wider uppercase transition-colors relative font-bold cursor-pointer ${
               activeTab === 'residential'
                 ? 'text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-gray-700'
@@ -89,19 +81,18 @@ export default function ProductGrid({ onQuickView }: ProductGridProps) {
             <ProductCard
               key={product.id}
               product={product}
-              onSelectOptions={handleSelectOptions}
             />
           ))}
         </div>
 
-        {/* Show More Button */}
+        {/* Show More Button linking to Collection */}
         <div className="text-center mt-10 sm:mt-12">
-          <button
-            type="button"
+          <Link
+            href={getCollectionUrl()}
             className="inline-block bg-white hover:bg-black text-black hover:text-white border border-black py-2.5 px-10 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors rounded-none focus:outline-none cursor-pointer font-montserrat"
           >
             Show More
-          </button>
+          </Link>
         </div>
 
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function CommercialSolutionsCard() {
   return (
@@ -57,29 +58,19 @@ export default function CommercialSolutionsCard() {
               </ul>
 
               <div className="mt-8">
-                <a
-                  href="#products"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const el = document.getElementById('products');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                <Link
+                  href="/collections/commercial-industrial"
                   className="inline-block bg-[#b32318] hover:bg-[#8B1812] text-white px-8 py-3 rounded-md text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 font-montserrat cursor-pointer"
                 >
                   Shop Now
-                </a>
+                </Link>
               </div>
 
             </div>
 
             {/* Right Column: Office Grid & Stacked Flat Panel Fixture - 16:9 Uncropped */}
-            <a
-              href="#products"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('products');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+            <Link
+              href="/collections/commercial-industrial"
               className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-white flex items-center justify-center shadow-lg group block cursor-pointer"
             >
               <img
@@ -88,7 +79,7 @@ export default function CommercialSolutionsCard() {
                 className="w-full h-full object-contain object-center transition-transform duration-700 ease-out group-hover:scale-102"
                 loading="lazy"
               />
-            </a>
+            </Link>
 
           </div>
         </div>
