@@ -39,8 +39,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialCart = await getCartIfExists();
-  const crossSell = await pickCrossSell(initialCart);
+  let initialCart = null;
+  let crossSell: any[] = [];
+  try {
+    initialCart = await getCartIfExists();
+    crossSell = await pickCrossSell(initialCart);
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "digest" in err && (err as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE") {
+      throw err;
+    }
+    console.error("RootLayout initial data load error:", err);
+  }
 
   return (
     <html lang="en" className={inter.variable}>

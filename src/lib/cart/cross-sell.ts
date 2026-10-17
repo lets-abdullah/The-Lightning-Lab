@@ -5,9 +5,10 @@ import { eq, and, notInArray, desc } from "drizzle-orm";
 import type { Cart, Product } from "@/lib/commerce/types";
 
 export async function pickCrossSell(cart: Cart | null): Promise<Product[]> {
-  if (!cart || !cart.lines || cart.lines.length === 0) {
-    return [];
-  }
+  try {
+    if (!cart || !cart.lines || cart.lines.length === 0) {
+      return [];
+    }
 
   // Collect handles of products already in the cart
   const cartProductHandles = cart.lines.map((l) => l.productHandle);
@@ -94,5 +95,9 @@ export async function pickCrossSell(cart: Cart | null): Promise<Product[]> {
     });
   }
 
-  return productList;
+    return productList;
+  } catch (error) {
+    console.error("Failed to pick cross-sell products:", error);
+    return [];
+  }
 }

@@ -9,55 +9,69 @@ import { buildCartSnapshot, type ResolvedLineRow } from "./resolve";
 import { loadActiveDiscounts } from "./discounts";
 
 export async function fetchFullCartById(cartId: string): Promise<Cart | null> {
-  const cartRows = await db
-    .select()
-    .from(carts)
-    .where(eq(carts.id, cartId))
-    .limit(1);
+  try {
+    const cartRows = await db
+      .select()
+      .from(carts)
+      .where(eq(carts.id, cartId))
+      .limit(1);
 
-  if (cartRows.length === 0) return null;
-  const rawCart = cartRows[0];
+    if (cartRows.length === 0) return null;
+    const rawCart = cartRows[0];
 
-  const lineRows = await db
-    .select({
-      lineId: cartLines.id,
-      quantity: cartLines.quantity,
-      variant: {
-        id: productVariants.id,
-        sku: productVariants.sku,
-        title: productVariants.title,
-        price: productVariants.price,
-        inventoryQuantity: productVariants.inventoryQuantity,
-        inventoryPolicy: productVariants.inventoryPolicy,
-        bulkPricing: productVariants.bulkPricing,
-        image: productVariants.image,
-      },
-      product: {
-        handle: products.handle,
-        title: products.title,
-        images: products.images,
-      },
-    })
-    .from(cartLines)
-    .innerJoin(productVariants, eq(cartLines.variantId, productVariants.id))
-    .innerJoin(products, eq(productVariants.productId, products.id))
-    .where(eq(cartLines.cartId, rawCart.id));
+    const lineRows = await db
+      .select({
+        lineId: cartLines.id,
+        quantity: cartLines.quantity,
+        variant: {
+          id: productVariants.id,
+          sku: productVariants.sku,
+          title: productVariants.title,
+          price: productVariants.price,
+          inventoryQuantity: productVariants.inventoryQuantity,
+          inventoryPolicy: productVariants.inventoryPolicy,
+          bulkPricing: productVariants.bulkPricing,
+          image: productVariants.image,
+        },
+        product: {
+          handle: products.handle,
+          title: products.title,
+          images: products.images,
+        },
+      })
+      .from(cartLines)
+      .innerJoin(productVariants, eq(cartLines.variantId, productVariants.id))
+      .innerJoin(products, eq(productVariants.productId, products.id))
+      .where(eq(cartLines.cartId, rawCart.id));
 
-  const knownDiscounts = await loadActiveDiscounts(rawCart.discountCodes || []);
+    const knownDiscounts = await loadActiveDiscounts(rawCart.discountCodes || []);
 
-  return buildCartSnapshot({
-    cart: rawCart,
-    lines: lineRows as ResolvedLineRow[],
-    knownDiscounts,
-  });
+    return buildCartSnapshot({
+      cart: rawCart,
+      lines: lineRows as ResolvedLineRow[],
+      knownDiscounts,
+    });
+  } catch (error) {
+    console.error("Failed to fetch cart by ID:", error);
+    return null;
+  }
 }
 
 export async function getCartIfExists(): Promise<Cart | null> {
-  const cookieStore = await cookies();
-  const cartIdCookie = cookieStore.get(CART_COOKIE_NAME);
-  if (!cartIdCookie?.value) return null;
+  let cartId: string | undefined;
+  try {
+    const cookieStore = await cookies();
+    cartId = cookieStore.get(CART_COOKIE_NAME)?.value;
+  } catch (error) {
+    if ((error as any)?.digest === "DYNAMIC_SERVER_USAGE") {
+      throw error;
+    }
+    return null;
+  }
 
-  return fetchFullCartById(cartIdCookie.value);
+  if (!cartId) return null;
+
+  return await fetchFullCartById(cartId);
 }
 
 export async function getOrCreateCart(): Promise<Cart> {

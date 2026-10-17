@@ -4,6 +4,7 @@ declare module "pg" {
     max?: number;
     idleTimeoutMillis?: number;
     connectionTimeoutMillis?: number;
+    ssl?: boolean | { rejectUnauthorized?: boolean };
   }
 
   export class Pool {

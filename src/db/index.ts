@@ -8,10 +8,16 @@ const globalForDb = globalThis as unknown as {
   conn: Pool | undefined;
 };
 
+const isLocal =
+  env.DATABASE_URL.includes("localhost") ||
+  env.DATABASE_URL.includes("127.0.0.1");
+
 const pool =
   globalForDb.conn ??
   new Pool({
     connectionString: env.DATABASE_URL,
+    ssl: isLocal ? false : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 5000,
   });
 
 if (process.env.NODE_ENV !== "production") globalForDb.conn = pool;
