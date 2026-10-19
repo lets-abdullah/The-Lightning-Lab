@@ -5,6 +5,7 @@ import { carts, cartLines, productVariants, products } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { Cart } from "@/lib/commerce/types";
 import { CART_COOKIE_NAME, CART_COOKIE_MAX_AGE } from "./constants";
+export { CART_COOKIE_NAME, CART_COOKIE_MAX_AGE } from "./constants";
 import { buildCartSnapshot, type ResolvedLineRow } from "./resolve";
 import { loadActiveDiscounts } from "./discounts";
 

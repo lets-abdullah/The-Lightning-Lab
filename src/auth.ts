@@ -54,7 +54,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 email: "google.demo@thelightninglab.com",
                 emailVerified: new Date(),
                 type: "contractor",
-                companyName: "Vance Commercial Electrical LLC",
               })
               .returning();
             demoRow = created;

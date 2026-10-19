@@ -6,7 +6,8 @@ import { db } from "@/db";
 import { orders, orderLines, cartLines } from "@/db/schema";
 import { auth } from "@/auth";
 import { eq } from "drizzle-orm";
-import { getOrCreateCart, CART_COOKIE_NAME } from "@/lib/cart/session";
+import { getOrCreateCart } from "@/lib/cart/session";
+import { CART_COOKIE_NAME } from "@/lib/cart/constants";
 import type { Address } from "@/lib/commerce/types";
 
 export interface PlaceOrderInput {

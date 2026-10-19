@@ -14,14 +14,13 @@ export const metadata: Metadata = {
 const EMPTY_CART: Cart = {
   id: "",
   token: "",
-  currencyCode: "USD",
+  currency: "USD",
   lines: [],
-  discounts: [],
+  discountCodes: [],
   subtotal: 0,
   discountTotal: 0,
-  taxTotal: 0,
-  shippingTotal: 0,
   total: 0,
+  freeShippingRemaining: 0,
 };
 
 export default async function CheckoutPage() {

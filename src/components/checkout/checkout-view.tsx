@@ -18,7 +18,7 @@ import {
   Trash2,
   AlertCircle,
 } from "lucide-react";
-import type { Cart, CartLine } from "@/lib/commerce/types";
+import type { Cart, CartLine, Address } from "@/lib/commerce/types";
 import { formatPrice } from "@/lib/utils/format";
 import { useCartUi } from "@/lib/cart/store";
 import { updateLineAction, removeLineAction } from "@/lib/cart/actions";
@@ -153,17 +153,21 @@ export function CheckoutView({
     setOrderError(null);
     setIsPlacingOrder(true);
 
-    const addressPayload = {
+    const addressPayload: Address = {
+      id: crypto.randomUUID(),
+      customerId: null,
       firstName: formData.firstName,
       lastName: formData.lastName,
       company: formData.company || undefined,
-      address1: formData.address1,
-      address2: formData.address2 || undefined,
+      line1: formData.address1,
+      line2: formData.address2 || undefined,
       city: formData.city,
-      province: formData.province,
+      state: formData.province,
       postalCode: formData.postalCode,
       country: formData.country,
       phone: formData.phone || undefined,
+      isDefaultBilling: false,
+      isDefaultShipping: false,
     };
 
     const res = await createOrderAction({
