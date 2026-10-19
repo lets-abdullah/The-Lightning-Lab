@@ -45,12 +45,12 @@ export function Footer() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 text-xs text-gray-300">
           {/* Column 1: Bio & Contact */}
           <div className="space-y-4">
-            <div className="relative h-9 w-44">
+            <div className="relative h-10 w-40">
               <Image
                 src="/images/the-lighting-lab-logo.png"
                 alt="The Lighting Lab"
                 fill
-                sizes="176px"
+                sizes="160px"
                 className="object-contain object-left"
               />
             </div>

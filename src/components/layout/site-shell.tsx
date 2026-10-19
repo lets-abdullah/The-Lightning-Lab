@@ -65,13 +65,13 @@ export function SiteShell({ children, crossSell }: SiteShellProps) {
               href="/"
               className="flex items-center group select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
             >
-              <div className="bg-[#231f20] hover:bg-[#231f20] px-3.5 py-1.5 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center justify-center">
-                <div className="relative h-7 sm:h-8 w-36 sm:w-40 flex items-center justify-center">
+              <div className="bg-[#1d1c1a] hover:bg-[#1d1c1a] px-2.5 py-1 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center justify-center">
+                <div className="relative h-10 sm:h-12 w-32 sm:w-40">
                   <Image
                     src="/images/the-lighting-lab-logo.png"
                     alt="The Lighting Lab"
                     fill
-                    sizes="160px"
+                    sizes="(max-width: 640px) 128px, 160px"
                     priority
                     className="object-contain object-center"
                   />
@@ -106,7 +106,7 @@ export function SiteShell({ children, crossSell }: SiteShellProps) {
   // 3. Normal Shop Layout with Full Header & Footer
   return (
     <ShellContext.Provider value={{ isNotFound, setIsNotFound }}>
-      <div data-site-shell-header>
+      <div data-site-shell-header className="sticky top-0 z-40">
         <AnnouncementBar />
         <Header />
       </div>

@@ -52,9 +52,9 @@ export function Header() {
   );
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-40">
+    <header className="w-full bg-white border-b border-gray-200 z-40">
       {/* 1. Upper Main Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4 lg:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4 lg:gap-8 relative">
         {/* Mobile Hamburger Button */}
         <div className="md:hidden flex items-center">
           <button
@@ -68,15 +68,16 @@ export function Header() {
         </div>
 
         {/* Brand Logo in Black Badge Container */}
-        <div className="flex items-center">
+        {/* On mobile: absolute center. On desktop: normal flow */}
+        <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center">
           <Link href="/" className="flex items-center group select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
-            <div className="bg-[#231f20] hover:bg-[#231f20] hover:border-gray-700 px-3.5 py-1.5 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center justify-center">
-              <div className="relative h-7 sm:h-8 w-36 sm:w-40 flex items-center justify-center">
+            <div className="bg-[#1d1c1a] hover:bg-[#1d1c1a] hover:border-gray-700 px-2.5 py-1 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center justify-center">
+              <div className="relative h-10 sm:h-12 w-32 sm:w-40">
                 <Image
                   src="/images/the-lighting-lab-logo.png"
                   alt="The Lighting Lab"
                   fill
-                  sizes="160px"
+                  sizes="(max-width: 640px) 128px, 160px"
                   priority
                   className="object-contain object-center"
                 />

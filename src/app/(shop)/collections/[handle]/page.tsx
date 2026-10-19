@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 import { commerce } from "@/lib/commerce";
 import {
   parseFilters,
@@ -103,50 +103,36 @@ export default async function CollectionPage({
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6">
         <JsonLd data={jsonLdData} />
 
-        {/* Proper Category Hero Banner with Background Image */}
-        <div className="relative rounded-2xl overflow-hidden shadow-xs border border-gray-200/80 min-h-[200px] sm:min-h-[240px] lg:min-h-[270px] flex items-center">
-          {/* Background Image */}
-          <Image
-            src={heroData.bgImage}
-            alt={heroData.title}
-            fill
-            priority
-            sizes="(max-width: 1280px) 100vw, 1280px"
-            className="object-cover object-center"
-          />
-
-          {/* Dark gradient overlay for extreme legibility & contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/35" />
-
-          {/* Content */}
-          <div className="relative z-10 p-6 sm:p-8 lg:p-10 max-w-3xl space-y-3">
-            {/* Category Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-white/15 text-white backdrop-blur-md border border-white/20">
-              <span className="size-1.5 rounded-full bg-[#8B1812]" />
-              {heroData.badge}
-            </div>
-
-            {/* Title */}
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+        {/* Category Breadcrumbs & Title */}
+        <div className="space-y-2 pb-1">
+          <nav aria-label="Breadcrumb" className="text-xs text-gray-500">
+            <ol className="flex items-center space-x-2">
+              <li>
+                <Link href="/" className="hover:text-gray-900 transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li className="text-gray-400">/</li>
+              <li>
+                <Link href="/collections/all" className="hover:text-gray-900 transition-colors">
+                  Collections
+                </Link>
+              </li>
+              <li className="text-gray-400">/</li>
+              <li className="text-gray-900 font-medium" aria-current="page">
+                {heroData.title}
+              </li>
+            </ol>
+          </nav>
+          <div className="border-b border-gray-200 pb-4">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
               {heroData.title}
             </h1>
-
-            {/* Description */}
-            <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-normal max-w-2xl">
-              {heroData.description}
-            </p>
-
-            {/* Key Spec Badges */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {heroData.features.map((feat) => (
-                <span
-                  key={feat}
-                  className="inline-flex items-center text-[11px] font-semibold text-white/90 bg-black/40 backdrop-blur-xs px-2.5 py-1 rounded-md border border-white/15"
-                >
-                  ✓ {feat}
-                </span>
-              ))}
-            </div>
+            {heroData.description && (
+              <p className="text-xs sm:text-sm text-gray-500 max-w-3xl mt-1.5 leading-relaxed">
+                {heroData.description}
+              </p>
+            )}
           </div>
         </div>
 
