@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   },
   description:
     "Commercial LED lighting fixtures, DLC 5.1 premium panels, high bays, linear strips, troffers, downlights, and emergency lights with contractor volume pricing.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {
