@@ -104,7 +104,6 @@ export function Footer() {
             <ul className="space-y-2 text-xs">
               <li><Link href="/" className="text-gray-300 hover:text-white">Home</Link></li>
               <li><Link href="/collections/all" className="text-gray-300 hover:text-white">Shop All</Link></li>
-              <li><Link href="/quote-request" className="text-gray-300 hover:text-white">Contractor Quote</Link></li>
               <li><Link href="/policies/privacy" className="text-gray-300 hover:text-white">Privacy Policy</Link></li>
               <li><Link href="/policies/terms" className="text-gray-300 hover:text-white">Terms of Service</Link></li>
             </ul>
@@ -119,7 +118,7 @@ export function Footer() {
               <li><Link href="/policies/shipping" className="text-gray-300 hover:text-white">Shipping Information</Link></li>
               <li><Link href="/pages/warranty" className="text-gray-300 hover:text-white">Warranty Claims</Link></li>
               <li><Link href="/track-order" className="text-gray-300 hover:text-white">Track Order</Link></li>
-              <li><Link href="/quote-request" className="text-gray-300 hover:text-white">Bulk Sale Inquiry</Link></li>
+              <li><Link href="/quote-request" className="text-gray-300 hover:text-white">Bulk &amp; Contractor Quotes</Link></li>
               <li><Link href="/contact" className="text-gray-300 hover:text-white">Contact Us</Link></li>
             </ul>
           </div>

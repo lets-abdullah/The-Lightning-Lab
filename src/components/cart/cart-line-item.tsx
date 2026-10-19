@@ -20,6 +20,23 @@ export function CartLineItem({ line }: CartLineItemProps) {
   const setCart = useCartUi((state) => state.setCart);
 
   function handleQuantityChange(nextQty: number) {
+    const currentCart = useCartUi.getState().cart;
+    if (currentCart && currentCart.lines) {
+      const optimisticLines = currentCart.lines.map((l) =>
+        l.id === line.id
+          ? { ...l, quantity: nextQty, lineTotal: l.unitPrice * nextQty }
+          : l
+      );
+      const newSubtotal = optimisticLines.reduce((s, l) => s + l.lineTotal, 0);
+      const newDiscount = currentCart.discountTotal || 0;
+      setCart({
+        ...currentCart,
+        lines: optimisticLines,
+        subtotal: newSubtotal,
+        total: Math.max(0, newSubtotal - newDiscount),
+      });
+    }
+
     startTransition(async () => {
       const updatedCart = await updateLineAction({
         lineId: line.id,

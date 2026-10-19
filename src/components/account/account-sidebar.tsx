@@ -11,6 +11,7 @@ import {
   FileText,
   RotateCcw,
   LogOut,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -52,7 +53,19 @@ export function AccountSidebar() {
         })}
       </div>
 
-      <div className="pt-4 border-t border-border">
+      <div className="pt-4 border-t border-border space-y-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="w-full justify-start text-foreground hover:bg-muted font-bold"
+        >
+          <Link href="/">
+            <Home className="w-4 h-4 mr-2 text-[#8B1812]" />
+            <span>Back to Home Page</span>
+          </Link>
+        </Button>
+
         <Button
           variant="ghost"
           size="sm"

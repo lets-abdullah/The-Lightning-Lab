@@ -335,11 +335,19 @@ export function getCategoryHero(handle: string, defaultTitle?: string, defaultDe
   const existing = CATEGORY_HEROES[handle];
   if (existing) return existing;
 
+  const formattedTitle = defaultTitle || handle
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ")
+    .replace(/\bLed\b/g, "LED")
+    .replace(/\bCct\b/g, "CCT")
+    .replace(/\bUfo\b/g, "UFO");
+
   // Fallback to sensible defaults
   return {
-    title: defaultTitle || "Commercial LED Lighting",
+    title: formattedTitle,
     badge: "COMMERCIAL GRADE • DLC & UL LISTED",
-    description: defaultDescription || "Commercial fixtures engineered for maximum efficacy, durability, and fast contractor delivery.",
+    description: defaultDescription || `Explore our high-efficacy ${formattedTitle.toLowerCase()} collection. Engineered for maximum longevity, commercial certifications, and quick installation.`,
     bgImage: "/images/commercial_lighting_solutions.jpeg",
     features: ["DLC 5.1 Certified", "5-Year Replacement Warranty", "Free Shipping Over $99", "Contractor Volume Discounts"],
   };

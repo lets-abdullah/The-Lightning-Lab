@@ -3,26 +3,41 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingCart, User, ChevronDown, Menu, X } from "lucide-react";
-import { navCategories, type NavCategory } from "@/data/storeData";
+import { Search, ShoppingCart, User, ChevronDown, ChevronRight, ArrowRight, Menu, X } from "lucide-react";
+import { primaryNav, NavNode } from "@/lib/nav";
+import { getSubcategoryImage } from "@/lib/nav-images";
 import { useCartUi } from "@/lib/cart/store";
+
+function getNavHref(node: NavNode): string {
+  if (node.handle === "home" || node.handle === "/") return "/";
+  if (node.handle === "shop-all") return "/collections/all";
+  if (node.handle === "#") return "#";
+  if (node.handle.startsWith("/")) return node.handle;
+  return `/collections/${node.handle}`;
+}
+
+const navItems: NavNode[] = [
+  { handle: "home", title: "HOME" },
+  ...primaryNav,
+];
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const cart = useCartUi((state) => state.cart);
   const openCart = useCartUi((state) => state.open);
   const cartCount = cart?.lines ? cart.lines.reduce((sum, l) => sum + l.quantity, 0) : 0;
 
-  const handleMouseEnter = (categoryName: string) => {
+  const handleMouseEnter = (categoryHandle: string) => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
-    setActiveDropdown(categoryName);
+    setActiveDropdown(categoryHandle);
   };
 
   const handleMouseLeave = () => {
@@ -32,8 +47,8 @@ export function Header() {
     }, 200);
   };
 
-  const currentActiveCategory: NavCategory | undefined = navCategories.find(
-    (c) => c.name === activeDropdown
+  const activeNode: NavNode | undefined = primaryNav.find(
+    (c) => c.handle === activeDropdown
   );
 
   return (
@@ -55,15 +70,15 @@ export function Header() {
         {/* Brand Logo in Black Badge Container */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center group select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xl">
-            <div className="bg-[#1c1a1b] hover:bg-[#121111] px-3.5 py-1.5 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center">
-              <div className="relative h-7 sm:h-8 w-40 sm:w-44">
+            <div className="bg-[#231f20] hover:bg-[#231f20] hover:border-gray-700 px-3.5 py-1.5 rounded-xl border border-gray-800 shadow-xs transition-all flex items-center justify-center">
+              <div className="relative h-7 sm:h-8 w-36 sm:w-40 flex items-center justify-center">
                 <Image
                   src="/images/the-lighting-lab-logo.png"
                   alt="The Lighting Lab"
                   fill
-                  sizes="176px"
+                  sizes="160px"
                   priority
-                  className="object-contain object-left"
+                  className="object-contain object-center"
                 />
               </div>
             </div>
@@ -147,28 +162,30 @@ export function Header() {
       >
         <div className="max-w-7xl mx-auto px-4">
           <ul className="flex items-center justify-center gap-6 lg:gap-8 py-3 text-xs sm:text-[13px] font-bold tracking-wider text-gray-900">
-            {navCategories.map((item) => {
-              const isHovered = activeDropdown === item.name;
+            {navItems.map((item) => {
+              const hasDropdown = Boolean(item.children && item.children.length > 0);
+              const isHovered = activeDropdown === item.handle;
+
               return (
                 <li
-                  key={item.name}
+                  key={item.handle}
                   className="relative py-1"
                   onMouseEnter={() => {
-                    if (item.hasDropdown) {
-                      handleMouseEnter(item.name);
+                    if (hasDropdown) {
+                      handleMouseEnter(item.handle);
                     } else {
                       setActiveDropdown(null);
                     }
                   }}
                 >
                   <Link
-                    href={item.href.startsWith("#") ? "/collections/all" : item.href}
+                    href={getNavHref(item)}
                     className={`flex items-center gap-1 uppercase transition-colors select-none font-bold cursor-pointer py-1 ${
                       isHovered ? "text-[#8B1812]" : "text-gray-900 hover:text-[#8B1812]"
                     }`}
                   >
-                    <span>{item.name}</span>
-                    {item.hasDropdown && (
+                    <span>{item.title}</span>
+                    {hasDropdown && (
                       <ChevronDown
                         className={`size-3.5 transition-transform duration-200 ${
                           isHovered ? "rotate-180 text-[#8B1812]" : "text-gray-500"
@@ -182,8 +199,8 @@ export function Header() {
           </ul>
         </div>
 
-        {/* 3. Full-Width Mega Menu Dropdown with Product Images and Names */}
-        {activeDropdown && currentActiveCategory?.hasDropdown && currentActiveCategory.items && (
+        {/* 3. Full-Width Mega Menu Dropdown with Columns and Subcategories */}
+        {activeDropdown && activeNode && activeNode.children && activeNode.children.length > 0 && (
           <div
             className="absolute top-full left-0 right-0 w-full bg-white border-t border-b border-gray-200 shadow-2xl py-8 px-6 sm:px-12 lg:px-16 z-50 animate-in fade-in duration-100"
             onMouseEnter={() => {
@@ -195,40 +212,123 @@ export function Header() {
             onMouseLeave={handleMouseLeave}
           >
             <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-8 items-center">
-                {currentActiveCategory.items.map((subItem) => (
-                  <Link
-                    key={subItem.name}
-                    href={subItem.link}
-                    onClick={() => setActiveDropdown(null)}
-                    className="flex items-center gap-4 group p-1.5 rounded-lg hover:opacity-80 transition-all cursor-pointer"
-                  >
-                    {/* Left Fixture Image */}
-                    <div className="size-16 sm:size-20 flex items-center justify-center shrink-0 bg-transparent relative">
-                      <Image
-                        src={subItem.image}
-                        alt={subItem.name}
-                        fill
-                        sizes="80px"
-                        className="object-contain transition-transform duration-300 ease-out group-hover:scale-105"
-                      />
-                    </div>
+              {activeNode.children.some((child) => child.children && child.children.length > 0) ? (
+                /* Column-Grouped Mega Menu (e.g. Commercial, Shop All, Outdoor, Strip) */
+                <div
+                  className={`grid gap-8 lg:gap-10 ${
+                    activeNode.children.length >= 4
+                      ? "grid-cols-2 lg:grid-cols-4"
+                      : activeNode.children.length === 3
+                      ? "grid-cols-1 md:grid-cols-3"
+                      : "grid-cols-1 md:grid-cols-2"
+                  }`}
+                >
+                  {activeNode.children.map((column, colIdx) => (
+                    <div
+                      key={column.handle === "#" ? `col-${colIdx}` : column.handle}
+                      className="space-y-3"
+                    >
+                      {/* Column Header */}
+                      {column.handle === "#" ? (
+                        <div className="border-b-2 border-[#8B1812]/20 pb-2">
+                          <h3 className="text-xs sm:text-[13px] font-extrabold uppercase tracking-wider text-gray-950">
+                            {column.title}
+                          </h3>
+                        </div>
+                      ) : (
+                        <div className="border-b-2 border-[#8B1812]/20 pb-2">
+                          <Link
+                            href={getNavHref(column)}
+                            onClick={() => setActiveDropdown(null)}
+                            className="text-xs sm:text-[13px] font-extrabold uppercase tracking-wider text-gray-950 hover:text-[#8B1812] flex items-center justify-between group/col transition-colors"
+                          >
+                            <span>{column.title}</span>
+                            <ChevronRight className="size-3.5 text-gray-400 group-hover/col:text-[#8B1812] group-hover/col:translate-x-0.5 transition-all" />
+                          </Link>
+                        </div>
+                      )}
 
-                    {/* Right Bold Uppercase Title */}
-                    <div className="flex-1 min-w-0">
-                      <span className="text-xs sm:text-[13px] md:text-sm font-semibold uppercase tracking-wider text-black group-hover:text-[#8B1812] transition-colors leading-snug block">
-                        {subItem.name}
-                      </span>
+                      {/* Subcategory Items with Product Images */}
+                      <div className="space-y-2 pt-1">
+                        {column.children?.map((sub) => (
+                          <Link
+                            key={sub.handle}
+                            href={getNavHref(sub)}
+                            onClick={() => setActiveDropdown(null)}
+                            className="flex items-center gap-3 p-1.5 -mx-1.5 rounded-lg hover:bg-gray-50/90 group transition-all"
+                          >
+                            <div className="size-11 sm:size-12 shrink-0 relative bg-white rounded-md border border-gray-100 flex items-center justify-center p-1 shadow-2xs group-hover:border-gray-300 transition-colors">
+                              <Image
+                                src={getSubcategoryImage(sub.handle)}
+                                alt={sub.title}
+                                fill
+                                sizes="48px"
+                                className="object-contain transition-transform duration-300 ease-out group-hover:scale-110"
+                              />
+                            </div>
+                            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-black group-hover:text-[#8B1812] transition-colors leading-snug">
+                              {sub.title}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </Link>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                /* Direct Leaf Subcategories (e.g. Residential, Emergency) */
+                <div>
+                  <div className="border-b-2 border-[#8B1812]/20 pb-2 mb-4">
+                    <h3 className="text-xs sm:text-[13px] font-extrabold uppercase tracking-wider text-gray-950">
+                      {activeNode.title} Fixtures
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+                    {activeNode.children.map((sub) => (
+                      <Link
+                        key={sub.handle}
+                        href={getNavHref(sub)}
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 hover:border-gray-300 hover:bg-gray-50/90 group transition-all"
+                      >
+                        <div className="size-12 shrink-0 relative bg-white rounded-md flex items-center justify-center p-1 shadow-2xs group-hover:border-gray-300">
+                          <Image
+                            src={getSubcategoryImage(sub.handle)}
+                            alt={sub.title}
+                            fill
+                            sizes="48px"
+                            className="object-contain transition-transform duration-300 ease-out group-hover:scale-110"
+                          />
+                        </div>
+                        <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-black group-hover:text-[#8B1812] transition-colors leading-snug">
+                          {sub.title}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Watermark in bottom right matching user screenshot */}
-              <div className="mt-8 pt-4 border-t border-gray-100 flex items-center justify-end">
-                <span className="text-[11px] text-gray-400 font-semibold">
-                  Created with <span className="text-[#6366f1] font-bold">Smart Menu</span>
-                </span>
+              {/* Bottom Quick-Info Bar */}
+              <div className="mt-8 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-4 text-xs text-gray-500 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-emerald-500 inline-block" />
+                    DLC 5.1 &amp; UL Certified
+                  </span>
+                  <span className="hidden sm:inline text-gray-300">•</span>
+                  <span className="hidden sm:inline">Volume Discounts Auto-Applied</span>
+                  <span className="hidden sm:inline text-gray-300">•</span>
+                  <span className="hidden sm:inline">In-Stock Ships in 24h</span>
+                </div>
+                <Link
+                  href={getNavHref(activeNode)}
+                  onClick={() => setActiveDropdown(null)}
+                  className="text-xs font-bold text-[#8B1812] hover:text-[#70130e] flex items-center gap-1.5 uppercase tracking-wider group"
+                >
+                  <span>View All {activeNode.title}</span>
+                  <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
           </div>
@@ -284,43 +384,101 @@ export function Header() {
                 </form>
               </div>
 
-              <ul className="mt-6 space-y-3 text-sm font-bold text-gray-800">
-                {navCategories.map((item) => (
-                  <li key={item.name} className="border-b border-gray-100 pb-2">
-                    <Link
-                      href={item.href.startsWith("#") ? "/collections/all" : item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between hover:text-[#8B1812] cursor-pointer"
-                    >
-                      <span>{item.name}</span>
-                      {item.hasDropdown && <ChevronDown className="size-4 text-gray-400" />}
-                    </Link>
+              <ul className="mt-6 space-y-2 text-sm font-bold text-gray-800">
+                {navItems.map((item) => {
+                  const hasChildren = Boolean(item.children && item.children.length > 0);
+                  const isExpanded = mobileExpanded === item.handle;
 
-                    {item.hasDropdown && item.items && (
-                      <div className="pl-2 pt-2 space-y-2">
-                        {item.items.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.link}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex items-center gap-3 py-1.5 text-xs sm:text-sm font-bold text-gray-700 hover:text-[#8B1812] cursor-pointer"
+                  return (
+                    <li key={item.handle} className="border-b border-gray-100 pb-2">
+                      <div className="flex items-center justify-between">
+                        <Link
+                          href={getNavHref(item)}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex-1 py-1.5 hover:text-[#8B1812] cursor-pointer uppercase tracking-wide text-xs sm:text-sm font-bold"
+                        >
+                          {item.title}
+                        </Link>
+                        {hasChildren && (
+                          <button
+                            type="button"
+                            onClick={() => setMobileExpanded(isExpanded ? null : item.handle)}
+                            className="p-1.5 text-gray-500 hover:text-[#8B1812]"
+                            aria-label={`Toggle ${item.title} subcategories`}
                           >
-                            <div className="relative size-10 shrink-0 bg-gray-50 rounded-lg p-1">
-                              <Image
-                                src={sub.image}
-                                alt={sub.name}
-                                fill
-                                sizes="40px"
-                                className="object-contain"
-                              />
-                            </div>
-                            <span>{sub.name}</span>
-                          </Link>
-                        ))}
+                            <ChevronDown
+                              className={`size-4 transition-transform duration-200 ${
+                                isExpanded ? "rotate-180 text-[#8B1812]" : ""
+                              }`}
+                            />
+                          </button>
+                        )}
                       </div>
-                    )}
-                  </li>
-                ))}
+
+                      {hasChildren && isExpanded && (
+                        <div className="pl-3 pt-2 pb-1 space-y-3 bg-gray-50/80 rounded-lg mt-1 p-2.5">
+                          {item.children!.map((col, idx) => {
+                            const isCol = Boolean(col.children && col.children.length > 0);
+                            if (isCol) {
+                              return (
+                                <div
+                                  key={col.handle === "#" ? `m-col-${idx}` : col.handle}
+                                  className="space-y-1.5"
+                                >
+                                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-gray-900 block border-b border-gray-200 pb-1">
+                                    {col.title}
+                                  </span>
+                                  <ul className="space-y-1.5 pl-1">
+                                    {col.children!.map((sub) => (
+                                      <li key={sub.handle}>
+                                        <Link
+                                          href={getNavHref(sub)}
+                                          onClick={() => setMobileMenuOpen(false)}
+                                          className="flex items-center gap-2.5 py-1 text-xs text-gray-700 hover:text-[#8B1812] font-semibold"
+                                        >
+                                          <div className="size-8 shrink-0 relative bg-white rounded border border-gray-100 flex items-center justify-center p-0.5">
+                                            <Image
+                                              src={getSubcategoryImage(sub.handle)}
+                                              alt={sub.title}
+                                              fill
+                                              sizes="32px"
+                                              className="object-contain"
+                                            />
+                                          </div>
+                                          <span className="uppercase text-[11px] tracking-wide leading-tight">{sub.title}</span>
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <Link
+                                key={col.handle}
+                                href={getNavHref(col)}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center gap-2.5 py-1 text-xs text-gray-700 hover:text-[#8B1812] font-semibold pl-1"
+                              >
+                                <div className="size-8 shrink-0 relative bg-white rounded border border-gray-100 flex items-center justify-center p-0.5">
+                                  <Image
+                                    src={getSubcategoryImage(col.handle)}
+                                    alt={col.title}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain"
+                                  />
+                                </div>
+                                <span className="uppercase text-[11px] tracking-wide leading-tight">{col.title}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 

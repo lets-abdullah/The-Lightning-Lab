@@ -1,11 +1,19 @@
 import { z } from "zod";
 
+try {
+  process.loadEnvFile?.();
+} catch {
+  // Ignore missing .env in production/CI
+}
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
 
-  // Database (Postgres + Drizzle)
+  // Database (Postgres + Drizzle + Neon)
   DATABASE_URL: z.string().default("postgresql://postgres:postgres@localhost:5432/postgres"),
+  DATABASE_URL_UNPOOLED: z.string().optional(),
+  NEON_BRANCH: z.string().optional(),
 
   // Auth (Auth.js v5)
   AUTH_SECRET: z.string().default("fallback_auth_secret_must_be_at_least_32_characters_long_for_build"),
@@ -40,6 +48,8 @@ const envSchema = z.object({
 const rawEnv = {
   ...process.env,
   DATABASE_URL: process.env.DATABASE_URL || undefined,
+  DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED || undefined,
+  NEON_BRANCH: process.env.NEON_BRANCH || undefined,
   AUTH_SECRET: process.env.AUTH_SECRET || undefined,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || undefined,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || undefined,

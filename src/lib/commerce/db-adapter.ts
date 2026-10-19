@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { products, productVariants, collections } from "@/db/schema";
 import { eq, desc, asc, and, arrayContains, gte, lte, sql, type SQL } from "drizzle-orm";
 import { resolveGalleryImages } from "./resolve-image";
-import { CATEGORY_HEROES } from "./category-heroes";
+import { CATEGORY_HEROES, getCategoryHero } from "./category-heroes";
 import type { CommerceAdapter } from "./index";
 import type { ProductFilter, SortOption } from "./filters";
 import type {
@@ -64,22 +64,57 @@ export class DbAdapter implements CommerceAdapter {
     const rawTarget = params?.collectionHandle ?? params?.collection;
     const aliases: Record<string, string> = {
       "high-bays": "commercial-industrial",
+      "high-bay-lights": "commercial-industrial",
+      "linear-high-bay": "commercial-industrial",
+      "ufo-high-bay": "commercial-industrial",
       "ufo-high-bays": "commercial-industrial",
       "linear-fixtures": "led-strip-lights",
       "linear-lights": "led-strip-lights",
+      "strip-light-fixtures": "commercial-industrial",
+      "vapor-tight-fixture": "commercial-industrial",
+      "architectural-linear": "commercial-industrial",
+      "linear-connectors": "commercial-industrial",
       "panels": "led-panel-lights",
       "troffers": "troffer-lights",
       "wall-packs": "outdoor-lighting",
+      "wall-pack": "outdoor-lighting",
       "canopy-lights": "outdoor-lighting",
+      "canopy-light": "outdoor-lighting",
       "emergency": "emergency-exit",
+      "emergency-drivers": "emergency-exit",
+      "led-exit-signs": "emergency-exit",
       "tubes": "commercial-industrial",
+      "t8-led-tube-light": "commercial-industrial",
+      "led-tube-light-fixture": "commercial-industrial",
       "vapor-tight": "commercial-industrial",
       "vapor-tights": "commercial-industrial",
       "downlights": "led-downlights",
       "downlight": "led-downlights",
+      "commercial-recessed-downlights": "led-downlights",
       "bulb": "led-downlights",
+      "led-bulb": "led-downlights",
+      "batten-light": "commercial-industrial",
+      "flush-mount": "led-panel-lights",
+      "led-light-mirror": "led-downlights",
       "sheets": "led-strip-lights",
       "sheet-rolls": "led-strip-lights",
+      "12v-cob-strip": "led-strip-lights",
+      "24v-cob-strip": "led-strip-lights",
+      "waterproof-led-tape": "led-strip-lights",
+      "led-sheet-roll": "led-strip-lights",
+      "strip-lighting": "led-strip-lights",
+      "strip": "led-strip-lights",
+      "power-supply": "led-strip-lights",
+      "dimmable-power-supply": "led-strip-lights",
+      "commercial": "commercial-industrial",
+      "outdoor": "outdoor-lighting",
+      "residential": "led-downlights",
+      "led-flood-lights": "outdoor-lighting",
+      "led-area-lights": "outdoor-lighting",
+      "security-lights": "outdoor-lighting",
+      "landscaping-light": "outdoor-lighting",
+      "post-light": "outdoor-lighting",
+      "bollard-lights": "outdoor-lighting",
     };
     const targetCollection = rawTarget ? (aliases[rawTarget] || rawTarget) : undefined;
     const perPage = params?.perPage ?? params?.limit ?? 24;
@@ -92,6 +127,37 @@ export class DbAdapter implements CommerceAdapter {
     // Filter by membership in products.collections[] or subcategory keywords
     if (targetCollection && targetCollection !== "all") {
       switch (targetCollection) {
+        case "commercial":
+        case "commercial-industrial":
+          conditions.push(
+            sql`(${products.collections} && array['commercial-industrial'] OR ${products.title} ILIKE '%high bay%' OR ${products.title} ILIKE '%troffer%' OR ${products.title} ILIKE '%tube%')`
+          );
+          break;
+        case "residential":
+        case "led-downlights":
+          conditions.push(
+            sql`(${products.collections} && array['led-downlights', '4-inch-downlights', '6-inch-downlights'] OR ${products.title} ILIKE '%downlight%' OR ${products.title} ILIKE '%bulb%' OR ${products.title} ILIKE '%mirror%')`
+          );
+          break;
+        case "outdoor":
+        case "outdoor-lighting":
+          conditions.push(
+            sql`(${products.collections} && array['outdoor-lighting'] OR ${products.title} ILIKE '%outdoor%' OR ${products.title} ILIKE '%flood%' OR ${products.title} ILIKE '%wall pack%' OR ${products.title} ILIKE '%area%')`
+          );
+          break;
+        case "strip":
+        case "strip-lighting":
+        case "led-strip-lights":
+          conditions.push(
+            sql`(${products.collections} && array['led-strip-lights', 'cob-led-strip-lights', 'rgb-rgbw-strip-lights', 'single-color-strip-lights', 'waterproof-strip-lights'] OR ${products.title} ILIKE '%strip%' OR ${products.title} ILIKE '%sheet%' OR ${products.title} ILIKE '%tape%')`
+          );
+          break;
+        case "emergency":
+        case "emergency-exit":
+          conditions.push(
+            sql`(${products.collections} && array['emergency-exit'] OR ${products.title} ILIKE '%emergency%' OR ${products.title} ILIKE '%exit%')`
+          );
+          break;
         case "troffer-lights":
           conditions.push(
             sql`(${products.collections} && array['led-panel-lights','2x4-led-panels','2x2-led-panels','1x4-led-panels'] OR ${products.title} ILIKE '%troffer%')`
@@ -399,18 +465,69 @@ export class DbAdapter implements CommerceAdapter {
       resultProducts.push(this.mapProduct(p, variantRows));
     }
 
+    let finalTotal = total;
+    let finalPageCount = pageCount;
+
+    // Fallback: If specific subcategory query returned 0 products, guarantee at least 1+ products from parent collection
+    if (resultProducts.length === 0 && rawTarget && rawTarget !== "all") {
+      const PARENT_MAP: Record<string, string> = {
+        "residential": "led-downlights",
+        "led-emergency-panel-light": "led-panel-lights",
+        "led-edge-light": "led-panel-lights",
+        "artificial-sky-panel": "led-panel-lights",
+        "track-lights": "commercial-industrial",
+        "under-cabinet-lights": "commercial-industrial",
+        "hexagon-garage-lights": "commercial-industrial",
+        "explosion-proof-lighting": "commercial-industrial",
+        "pendant-light": "commercial-industrial",
+        "exhaust-fan": "commercial-industrial",
+        "up-down-sconce": "outdoor-lighting",
+        "rgb-wall-washer": "outdoor-lighting",
+        "led-light-brackets": "outdoor-lighting",
+        "pole": "outdoor-lighting",
+        "corn-bulb": "outdoor-lighting",
+        "landscaping-transformer": "outdoor-lighting",
+        "double-sided-tube": "commercial-industrial",
+        "batten-light": "commercial-industrial",
+        "led-light-mirror": "led-downlights",
+        "wall-pack": "outdoor-lighting",
+        "connector": "led-strip-lights",
+        "module": "led-strip-lights",
+        "controller-remote": "led-strip-lights",
+        "aluminum-track": "led-strip-lights",
+      };
+
+      const fallbackCollection = PARENT_MAP[rawTarget] || "commercial-industrial";
+      const fallbackRows = await db
+        .select()
+        .from(products)
+        .where(sql`${products.collections} && array[${fallbackCollection}]`)
+        .orderBy(orderBy)
+        .limit(perPage);
+
+      for (const p of fallbackRows) {
+        const variantRows = await db
+          .select()
+          .from(productVariants)
+          .where(eq(productVariants.productId, p.id));
+        resultProducts.push(this.mapProduct(p, variantRows));
+      }
+      finalTotal = resultProducts.length;
+      finalPageCount = 1;
+    }
+
     return {
       products: resultProducts,
-      total,
+      total: finalTotal,
       page,
       perPage,
-      pageCount,
-      nextCursor: page < pageCount ? String(page + 1) : undefined,
+      pageCount: finalPageCount,
+      nextCursor: page < finalPageCount ? String(page + 1) : undefined,
     };
   }
 
   async getCollection(handle: string): Promise<Collection | null> {
-    const hero = CATEGORY_HEROES[handle];
+    const hero = CATEGORY_HEROES[handle] || getCategoryHero(handle);
     if (hero) {
       const rows = await db
         .select()

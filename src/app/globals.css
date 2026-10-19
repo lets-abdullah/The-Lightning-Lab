@@ -69,3 +69,10 @@ html {
     outline-offset: 2px;
   }
 }
+
+/* Hide site navbar, footer, announcement bar, and drawer on 404 error page */
+body:has(.fullscreen-404) [data-site-shell-header],
+body:has(.fullscreen-404) [data-site-shell-footer],
+body:has(.fullscreen-404) #announcement-bar {
+  display: none !important;
+}

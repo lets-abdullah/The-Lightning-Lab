@@ -410,3 +410,13 @@ export async function setDefaultAddressAction(input: {
 
   return { ok: true, data: undefined };
 }
+
+export async function checkGoogleAuthConfigAction(): Promise<{ isMock: boolean }> {
+  const clientId = process.env.GOOGLE_CLIENT_ID || "";
+  const isMock =
+    !clientId ||
+    clientId.includes("mock") ||
+    clientId.includes("placeholder") ||
+    !clientId.includes(".apps.googleusercontent.com");
+  return { isMock };
+}

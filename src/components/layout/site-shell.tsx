@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { createContext, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Header } from "@/components/layout/header";
@@ -8,13 +8,29 @@ import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import type { Product } from "@/lib/commerce/types";
 
+interface ShellContextType {
+  isNotFound: boolean;
+  setIsNotFound: (val: boolean) => void;
+}
+
+const ShellContext = createContext<ShellContextType>({
+  isNotFound: false,
+  setIsNotFound: () => {},
+});
+
+export function useShell() {
+  return useContext(ShellContext);
+}
+
 interface SiteShellProps {
   children: React.ReactNode;
   crossSell: Product[];
 }
 
 export function SiteShell({ children, crossSell }: SiteShellProps) {
+  const [isNotFound, setIsNotFound] = useState(false);
   const pathname = usePathname();
+
   const isAuth =
     pathname === "/login" ||
     pathname === "/register" ||
@@ -24,21 +40,27 @@ export function SiteShell({ children, crossSell }: SiteShellProps) {
     pathname.startsWith("/reset-password") ||
     pathname.startsWith("/verify-email");
 
-  if (isAuth) {
+  if (isAuth || isNotFound) {
     return (
-      <main className="h-screen w-full overflow-hidden bg-slate-50 text-slate-900 flex items-center justify-center">
-        {children}
-      </main>
+      <ShellContext.Provider value={{ isNotFound, setIsNotFound }}>
+        <main className="h-screen w-full overflow-hidden bg-[#0c0a0b] text-white">
+          {children}
+        </main>
+      </ShellContext.Provider>
     );
   }
 
   return (
-    <>
-      <AnnouncementBar />
-      <Header />
+    <ShellContext.Provider value={{ isNotFound, setIsNotFound }}>
+      <div data-site-shell-header>
+        <AnnouncementBar />
+        <Header />
+      </div>
       <main className="min-h-[60vh] flex-1">{children}</main>
-      <Footer />
-      <CartDrawer crossSell={crossSell} />
-    </>
+      <div data-site-shell-footer>
+        <Footer />
+        <CartDrawer crossSell={crossSell} />
+      </div>
+    </ShellContext.Provider>
   );
 }

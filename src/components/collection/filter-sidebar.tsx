@@ -12,15 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -40,68 +31,113 @@ export const ALL_CATEGORIES = [
     items: [{ label: "All Products", handle: "all" }],
   },
   {
-    group: "Commercial & Industrial",
+    group: "Panels & Troffers",
     items: [
-      { label: "Commercial High Bays", handle: "commercial-industrial" },
-      { label: "UFO High Bays", handle: "ufo-high-bays" },
-      { label: "Linear High Bays", handle: "linear-high-bays" },
-      { label: "Vapor Tight Fixtures", handle: "vapor-tights" },
-      { label: "Tube Lights", handle: "tube-lights" },
-      { label: "Batten Lights", handle: "batten-lights" },
+      { label: "LED Panel Lights", handle: "led-panel-lights" },
+      { label: "Troffer Lights", handle: "troffers" },
+      { label: "LED Emergency Panel Light", handle: "led-emergency-panel-light" },
+      { label: "LED Edge Light", handle: "led-edge-light" },
+      { label: "Artificial Sky Panel", handle: "artificial-sky-panel" },
     ],
   },
   {
-    group: "LED Flat Panels",
+    group: "High Bays & Linear",
     items: [
-      { label: "LED Panels & Troffers", handle: "led-panel-lights" },
-      { label: "LED Troffers", handle: "troffer-lights" },
-      { label: "2x2 LED Panels", handle: "2x2-led-panels" },
-      { label: "2x4 LED Panels", handle: "2x4-led-panels" },
-      { label: "1x4 LED Panels", handle: "1x4-led-panels" },
-      { label: "Grid Frames", handle: "grid-frames" },
+      { label: "LED Linear High Bay Light", handle: "linear-high-bay" },
+      { label: "UFO High Bay Lights", handle: "ufo-high-bay" },
+      { label: "Vapor Tight Fixture", handle: "vapor-tight-fixture" },
+      { label: "Strip Light Fixtures", handle: "strip-light-fixtures" },
+      { label: "Architectural Linear Light", handle: "architectural-linear" },
+      { label: "Linear Connectors", handle: "linear-connectors" },
+    ],
+  },
+  {
+    group: "Downlights & Tubes",
+    items: [
+      { label: "Commercial Recessed Downlights", handle: "commercial-recessed-downlights" },
+      { label: "LED Tube Light Fixture", handle: "led-tube-light-fixture" },
+      { label: "T8 LED Tube Light", handle: "t8-led-tube-light" },
+    ],
+  },
+  {
+    group: "Misc & Fixtures",
+    items: [
+      { label: "Track Lights", handle: "track-lights" },
+      { label: "Under Cabinet Lights", handle: "under-cabinet-lights" },
+      { label: "Hexagon LED Garage Lights", handle: "hexagon-garage-lights" },
+      { label: "Explosion Proof Lighting", handle: "explosion-proof-lighting" },
+      { label: "Pendant Light", handle: "pendant-light" },
+      { label: "Exhaust Fan", handle: "exhaust-fan" },
+    ],
+  },
+  {
+    group: "Residential",
+    items: [
+      { label: "LED Bulb", handle: "led-bulb" },
+      { label: "Downlight", handle: "downlight" },
       { label: "Flush Mount", handle: "flush-mount" },
-    ],
-  },
-  {
-    group: "LED Downlights",
-    items: [
-      { label: "All Downlights", handle: "led-downlights" },
       { label: "Trimless Downlight", handle: "trimless-downlight" },
       { label: "Retrofit Can Lights", handle: "retrofit-can-lights" },
-      { label: "LED Bulbs", handle: "led-bulbs" },
-      { label: "Light Mirrors", handle: "mirror-lights" },
+      { label: "Batten Light", handle: "batten-light" },
+      { label: "LED Light Mirror", handle: "led-light-mirror" },
     ],
   },
   {
-    group: "Outdoor Commercial",
+    group: "Flood & Area",
     items: [
-      { label: "All Outdoor Lighting", handle: "outdoor-lighting" },
-      { label: "LED Wall Packs", handle: "wall-packs" },
-      { label: "Shoebox Parking Lot", handle: "shoebox-lights" },
-      { label: "Canopy Lights", handle: "canopy-lights" },
-      { label: "Flood Lights", handle: "flood-lights" },
-      { label: "Barn Lights", handle: "barn-lights" },
+      { label: "LED Area Lights", handle: "led-area-lights" },
+      { label: "LED Flood Lights", handle: "led-flood-lights" },
+      { label: "Wall Pack", handle: "wall-pack" },
+      { label: "Canopy Light", handle: "canopy-light" },
+      { label: "Security Lights", handle: "security-lights" },
     ],
   },
   {
-    group: "LED Strip Lights",
+    group: "Landscape & Decor",
     items: [
-      { label: "All Strip Lights", handle: "led-strip-lights" },
-      { label: "Modular Sheet Rolls", handle: "sheet-rolls" },
-      { label: "Gold Sheet Rolls", handle: "gold-sheet-roll" },
-      { label: "Flexible LED Sheets", handle: "flexible-led-sheet" },
-      { label: "RGBW Color Sheets", handle: "rgbw-color-sheet" },
-      { label: "Linear Fixtures", handle: "linear-fixtures" },
+      { label: "Landscaping Light", handle: "landscaping-light" },
+      { label: "Post Light", handle: "post-light" },
+      { label: "Bollard Lights", handle: "bollard-lights" },
+      { label: "Up Down Sconce Lights", handle: "up-down-sconce" },
+      { label: "RGB Wall Washer", handle: "rgb-wall-washer" },
+    ],
+  },
+  {
+    group: "Accessories & Bulbs",
+    items: [
+      { label: "LED Light Brackets", handle: "led-light-brackets" },
+      { label: "Pole", handle: "pole" },
+      { label: "Corn Bulb", handle: "corn-bulb" },
+      { label: "Landscaping Transformer", handle: "landscaping-transformer" },
+      { label: "Double Sided Tube Light", handle: "double-sided-tube" },
+    ],
+  },
+  {
+    group: "Strips & Tapes",
+    items: [
+      { label: "12V COB LED Strip Light", handle: "12v-cob-strip" },
+      { label: "24V COB LED Strip Light", handle: "24v-cob-strip" },
+      { label: "Waterproof LED Tape", handle: "waterproof-led-tape" },
+      { label: "LED Sheet Roll", handle: "led-sheet-roll" },
+      { label: "Module", handle: "module" },
+    ],
+  },
+  {
+    group: "Power & Controls",
+    items: [
+      { label: "Power Supply", handle: "power-supply" },
+      { label: "Dimmable Power Supply", handle: "dimmable-power-supply" },
+      { label: "Dimmer Switch", handle: "dimmer-switch" },
+      { label: "Controller & Remote", handle: "controller-remote" },
+      { label: "Connector", handle: "connector" },
+      { label: "Aluminum Track", handle: "aluminum-track" },
     ],
   },
   {
     group: "Emergency & Exit",
     items: [
-      { label: "Emergency & Exit", handle: "emergency-exit" },
-      { label: "Exit Signs Combo", handle: "exit-signs-combo" },
-      { label: "Fire Resistant Exit Signs", handle: "fire-resistant-exit-sign" },
-      { label: "Emergency Sky Panels", handle: "emergency-sky-panels" },
-      { label: "Battery Backup Drivers", handle: "battery-backup-drivers" },
+      { label: "LED Exit Signs", handle: "led-exit-signs" },
+      { label: "Emergency Drivers", handle: "emergency-drivers" },
     ],
   },
 ];
@@ -223,43 +259,6 @@ export function FilterSidebar({ facets, totalCount, currentHandle }: FilterSideb
         )}
       </div>
 
-      {/* Category Dropdown Menu */}
-      <div className="space-y-1.5 pb-3 border-b border-gray-200">
-        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
-          Select Category
-        </label>
-        <Select
-          value={currentHandle || "all"}
-          onValueChange={(val) => {
-            router.push(`/collections/${val}`);
-          }}
-        >
-          <SelectTrigger className="w-full h-9 text-xs bg-white border-gray-300 font-semibold text-gray-900 shadow-2xs hover:border-gray-500">
-            <SelectValue placeholder="All Products" />
-          </SelectTrigger>
-          <SelectContent
-            position="popper"
-            side="bottom"
-            sideOffset={4}
-            avoidCollisions={false}
-            className="bg-white border border-gray-200 text-gray-900 shadow-xl max-h-72 z-50 rounded-lg"
-          >
-            {ALL_CATEGORIES.map((grp) => (
-              <SelectGroup key={grp.group}>
-                <SelectLabel className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider px-2 py-1 bg-gray-50">
-                  {grp.group}
-                </SelectLabel>
-                {grp.items.map((cat) => (
-                  <SelectItem key={cat.handle} value={cat.handle} className="text-xs cursor-pointer">
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
       <Accordion
         type="multiple"
         defaultValue={["categories", "price", "wattage", "cct", "certification"]}
@@ -278,24 +277,33 @@ export function FilterSidebar({ facets, totalCount, currentHandle }: FilterSideb
             </div>
           </AccordionTrigger>
           <AccordionContent className="pt-1 pb-3">
-            <div className="space-y-1 max-h-60 overflow-y-auto pr-1 text-xs">
-              {ALL_CATEGORIES.flatMap((grp) => grp.items).map((cat) => {
-                const isActive = currentHandle === cat.handle;
-                return (
-                  <Link
-                    key={cat.handle}
-                    href={`/collections/${cat.handle}`}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-md transition-colors ${
-                      isActive
-                        ? "bg-[#8B1812] text-white font-bold"
-                        : "text-gray-700 hover:bg-gray-100 hover:text-black font-medium"
-                    }`}
-                  >
-                    <span className="truncate pr-2">{cat.label}</span>
-                    {isActive && <Check className="size-3.5 shrink-0" />}
-                  </Link>
-                );
-              })}
+            <div className="space-y-3 max-h-72 overflow-y-auto pr-1 text-xs">
+              {ALL_CATEGORIES.map((grp) => (
+                <div key={grp.group} className="space-y-1">
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 pt-1 px-1">
+                    {grp.group}
+                  </div>
+                  <div className="space-y-0.5">
+                    {grp.items.map((cat) => {
+                      const isActive = currentHandle === cat.handle;
+                      return (
+                        <Link
+                          key={cat.handle}
+                          href={`/collections/${cat.handle}`}
+                          className={`flex items-center justify-between px-2 py-1.5 rounded-md transition-colors ${
+                            isActive
+                              ? "bg-[#8B1812] text-white font-bold"
+                              : "text-gray-700 hover:bg-gray-100 hover:text-black font-medium"
+                          }`}
+                        >
+                          <span className="truncate pr-2">{cat.label}</span>
+                          {isActive && <Check className="size-3.5 shrink-0" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </AccordionContent>
         </AccordionItem>

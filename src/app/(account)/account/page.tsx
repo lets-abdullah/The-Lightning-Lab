@@ -8,6 +8,8 @@ import { LinkOrdersBanner } from "@/components/account/link-orders-banner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+import { Home, ArrowLeft } from "lucide-react";
+
 export const dynamic = "force-dynamic";
 
 export default async function AccountDashboardPage() {
@@ -60,11 +62,19 @@ export default async function AccountDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Hi, {greetingName}</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your orders, addresses, and account profile.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Hi, {greetingName}</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your orders, addresses, and account profile.
+          </p>
+        </div>
+        <Button asChild variant="outline" className="border-gray-300 hover:border-gray-900 font-bold gap-2 shrink-0 self-start sm:self-auto shadow-xs">
+          <Link href="/">
+            <Home className="size-4 text-[#8B1812]" />
+            Back to Home Page
+          </Link>
+        </Button>
       </div>
 
       {isVerified && unlinkedCount > 0 && (

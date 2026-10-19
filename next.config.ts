@@ -39,6 +39,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/bulk-sale",
+        destination: "/quote-request",
+        permanent: true,
+      },
+      {
+        source: "/bulk-sale-inquiry",
+        destination: "/quote-request",
+        permanent: true,
+      },
+      {
+        source: "/contractor-quote",
+        destination: "/quote-request",
+        permanent: true,
+      },
+      {
+        source: "/bulk-quote",
+        destination: "/quote-request",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
