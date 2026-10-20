@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts",
+    "search:sync": "tsx scripts/search-sync.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",

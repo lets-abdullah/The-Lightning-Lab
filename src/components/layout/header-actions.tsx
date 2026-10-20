@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingCart, User } from "lucide-react";
+import { ShoppingCart, User } from "lucide-react";
 import { useCartUi } from "@/lib/cart/store";
+import { SearchTrigger } from "@/components/search/search-trigger";
 
 export function HeaderActions() {
   const cart = useCartUi((state) => state.cart);
@@ -11,13 +12,7 @@ export function HeaderActions() {
 
   return (
     <div className="flex items-center gap-5 sm:gap-7">
-      <button
-        type="button"
-        className="p-1.5 text-gray-700 hover:text-[#8B1812] transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs"
-        aria-label="Search"
-      >
-        <Search className="size-5" />
-      </button>
+      <SearchTrigger />
 
       {/* Cart with count badge */}
       <button

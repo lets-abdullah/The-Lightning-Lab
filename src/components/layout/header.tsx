@@ -7,6 +7,7 @@ import { Search, ShoppingCart, User, ChevronDown, ChevronRight, ArrowRight, Menu
 import { primaryNav, NavNode } from "@/lib/nav";
 import { getSubcategoryImage } from "@/lib/nav-images";
 import { HeaderActions } from "./header-actions";
+import { HeaderSearchBar } from "@/components/search/header-search-bar";
 
 function getNavHref(node: NavNode): string {
   if (node.handle === "home" || node.handle === "/") return "/";
@@ -22,7 +23,6 @@ const navItems: NavNode[] = [
 ];
 
 export function Header() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -49,9 +49,9 @@ export function Header() {
   );
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-40" data-site-shell-header>
+    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-40 overflow-visible" data-site-shell-header>
       {/* 1. Upper Main Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 lg:gap-8 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 lg:gap-8 relative z-30 overflow-visible">
         {/* Mobile Hamburger Button */}
         <div className="md:hidden flex items-center">
           <button
@@ -83,42 +83,23 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Center Search Input with Dark Red Search Button */}
-        <div className="flex-1 max-w-2xl mx-auto relative hidden sm:block">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (searchQuery.trim()) {
-                window.location.href = `/collections/all?q=${encodeURIComponent(searchQuery.trim())}`;
-              }
-            }}
-            className="relative flex items-center"
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              aria-label="Search luminaires and fixtures"
-              className="w-full bg-[#f4f5f7] hover:bg-[#eef1f5] focus:bg-white text-gray-900 text-sm font-medium rounded-full py-2.5 pl-5 pr-14 border border-transparent focus:border-gray-300 focus:outline-hidden transition-all shadow-inner"
-            />
-            <button
-              type="submit"
-              className="absolute right-1 size-9 rounded-full bg-[#8B1812] hover:bg-[#70130e] text-white flex items-center justify-center transition-transform active:scale-95 shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Submit search"
-            >
-              <Search className="size-4" />
-            </button>
-          </form>
+        {/* Center Search Input with Dark Red Search Button & Inline Recommendations */}
+        <div className="flex-1 max-w-2xl mx-auto relative hidden sm:block z-50 overflow-visible">
+          <HeaderSearchBar />
         </div>
 
         {/* Right Actions: HeaderActions (Search, Cart & Account) */}
         <HeaderActions />
       </div>
 
+      {/* Mobile Search Bar Row (visible on screens < sm) */}
+      <div className="sm:hidden px-4 pb-2.5 relative z-30 overflow-visible">
+        <HeaderSearchBar isMobile />
+      </div>
+
       {/* 2. Lower Navigation Menu Bar with Exact 7 Sections */}
       <nav
-        className="border-t border-gray-100 hidden md:block bg-white relative font-sans"
+        className="border-t border-gray-100 hidden md:block bg-white relative font-sans z-10"
         onMouseLeave={handleMouseLeave}
         aria-label="Main Navigation Categories"
       >
@@ -323,27 +304,7 @@ export function Header() {
               </div>
 
               <div className="mt-4">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (searchQuery.trim()) {
-                      setMobileMenuOpen(false);
-                      window.location.href = `/collections/all?q=${encodeURIComponent(searchQuery.trim())}`;
-                    }
-                  }}
-                  className="relative flex items-center"
-                >
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search fixtures..."
-                    className="w-full bg-gray-100 text-sm font-medium rounded-lg p-2.5 pr-10 border border-gray-200 focus:outline-hidden"
-                  />
-                  <button type="submit" className="absolute right-2 text-gray-500 hover:text-black">
-                    <Search className="size-4" />
-                  </button>
-                </form>
+                <HeaderSearchBar isMobile onNavigate={() => setMobileMenuOpen(false)} />
               </div>
 
               <ul className="mt-6 space-y-2 text-sm font-bold text-gray-800">

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { commerce } from "@/lib/commerce";
@@ -54,6 +54,10 @@ export default async function CollectionPage({
 }: CollectionPageProps) {
   const { handle } = await params;
   const rawParams = await searchParams;
+
+  if (typeof rawParams.q === "string" && rawParams.q.trim()) {
+    redirect(`/search?q=${encodeURIComponent(rawParams.q.trim())}`);
+  }
 
   const collection = await commerce.getCollection(handle);
   if (!collection) {

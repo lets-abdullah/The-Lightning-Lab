@@ -61,6 +61,18 @@ const nextConfig: NextConfig = {
         destination: "/quote-request",
         permanent: true,
       },
+      {
+        source: "/collections/all",
+        has: [
+          {
+            type: "query",
+            key: "q",
+            value: "(?<term>.*)",
+          },
+        ],
+        destination: "/search?q=:term",
+        permanent: false,
+      },
     ];
   },
 };

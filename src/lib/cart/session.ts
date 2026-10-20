@@ -17,6 +17,7 @@ export async function fetchFullCartById(cartId: string): Promise<Cart | null> {
       .where(eq(carts.id, cartId))
       .limit(1);
 
+    // Cart ID exists in cookie but not in DB (stale / deleted) — not an error
     if (cartRows.length === 0) return null;
     const rawCart = cartRows[0];
 
@@ -53,15 +54,17 @@ export async function fetchFullCartById(cartId: string): Promise<Cart | null> {
       knownDiscounts,
     });
   } catch (error) {
-    console.error("Failed to fetch cart by ID:", error);
+    // Only log real DB / network failures, not "cart not found" cases
+    console.warn("[cart] fetchFullCartById error:", error);
     return null;
   }
 }
 
 export async function getCartIfExists(): Promise<Cart | null> {
   let cartId: string | undefined;
+  let cookieStore: Awaited<ReturnType<typeof cookies>>;
   try {
-    const cookieStore = await cookies();
+    cookieStore = await cookies();
     cartId = cookieStore.get(CART_COOKIE_NAME)?.value;
   } catch (error) {
     if ((error as any)?.digest === "DYNAMIC_SERVER_USAGE") {
@@ -72,7 +75,19 @@ export async function getCartIfExists(): Promise<Cart | null> {
 
   if (!cartId) return null;
 
-  return await fetchFullCartById(cartId);
+  const cart = await fetchFullCartById(cartId);
+
+  // Stale cookie — cart was deleted or DB was reset. Clear it so the next
+  // request creates a fresh cart instead of querying a dead ID every time.
+  if (!cart) {
+    try {
+      cookieStore!.delete(CART_COOKIE_NAME);
+    } catch {
+      // Ignore: cookie deletion is best-effort in RSC context
+    }
+  }
+
+  return cart;
 }
 
 export async function getOrCreateCart(): Promise<Cart> {

@@ -29,11 +29,14 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
   // Typesense
-  TYPESENSE_API_KEY: z.string().optional(),
+  TYPESENSE_HOST: z.string().min(1),
+  TYPESENSE_PORT: z.coerce.number().default(8108),
+  TYPESENSE_PROTOCOL: z.enum(["http", "https"]).default("http"),
+  TYPESENSE_API_KEY: z.string().min(1),
+  TYPESENSE_COLLECTION: z.string().default("products"),
   NEXT_PUBLIC_TYPESENSE_SEARCH_ONLY_API_KEY: z.string().optional(),
-  TYPESENSE_HOST: z.string().optional(),
-  TYPESENSE_PORT: z.string().optional(),
-  TYPESENSE_PROTOCOL: z.enum(["http", "https"]).default("https"),
+  NEXT_PUBLIC_TYPESENSE_SEARCH_ONLY_KEY: z.string().optional(),
+  TYPESENSE_ANALYTICS: z.coerce.boolean().default(false),
 
   // Resend
   RESEND_API_KEY: z.string().optional(),
@@ -55,6 +58,8 @@ const rawEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || undefined,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || undefined,
+  TYPESENSE_HOST: process.env.TYPESENSE_HOST || "localhost",
+  TYPESENSE_API_KEY: process.env.TYPESENSE_API_KEY || "xyz",
 };
 
 const parsed = envSchema.safeParse(rawEnv);
@@ -65,4 +70,9 @@ if (!parsed.success) {
 
 export const env = parsed.success
   ? parsed.data
-  : (envSchema.parse({}) as z.infer<typeof envSchema>);
+  : (envSchema.parse({
+      TYPESENSE_HOST: "localhost",
+      TYPESENSE_API_KEY: "xyz",
+    }) as z.infer<typeof envSchema>);
+
+export const serverEnv = env;

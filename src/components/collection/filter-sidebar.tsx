@@ -128,7 +128,7 @@ export function FilterSidebar({
             >
               <span className="truncate pr-3 leading-snug">{cat.label}</span>
               <span
-                className={`shrink-0 text-xs font-semibold rounded-full px-2 py-0.5 min-w-[24px] text-center transition-colors ${
+                className={`shrink-0 text-xs font-semibold rounded-full px-2 py-0.5 min-w-6 text-center transition-colors ${
                   isActive
                     ? "bg-white/20 text-white"
                     : "bg-slate-100 text-slate-600 group-hover:bg-slate-200 group-hover:text-slate-800"
