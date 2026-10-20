@@ -131,7 +131,13 @@ export function buildFilterBy(
 export async function searchProducts(input: SearchQueryInput): Promise<SearchResults> {
   try {
     const rawQ = (input.q ?? "").trim();
-    const q = rawQ.slice(0, 200) || "*";
+    // Normalize unicode symbols like '×' (U+00D7) -> 'x', smart quotes, etc.
+    const normalizedQ = rawQ
+      .replace(/\u00D7/g, "x")
+      .replace(/[\u201C\u201D]/g, '"')
+      .replace(/[\u2018\u2019]/g, "'")
+      .trim();
+    const q = normalizedQ.slice(0, 200) || "*";
     const page = Math.max(1, input.page ?? 1);
     const perPage = Math.min(24, Math.max(1, input.perPage ?? 24));
 
@@ -163,7 +169,7 @@ export async function searchProducts(input: SearchQueryInput): Promise<SearchRes
       prefix: true,
       num_typos: 1,
       typo_tokens_threshold: 1,
-      drop_tokens_threshold: 0,
+      drop_tokens_threshold: 1,
       per_page: perPage,
       page,
       highlight_fields: "title,sku",

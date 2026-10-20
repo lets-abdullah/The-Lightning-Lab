@@ -5,7 +5,7 @@ import { serverEnv } from "@/lib/env";
 export const typesense = new Client({
   nodes: [
     {
-      host: serverEnv.TYPESENSE_HOST,
+      host: serverEnv.TYPESENSE_HOST === "localhost" ? "127.0.0.1" : serverEnv.TYPESENSE_HOST,
       port: serverEnv.TYPESENSE_PORT,
       protocol: serverEnv.TYPESENSE_PROTOCOL,
     },

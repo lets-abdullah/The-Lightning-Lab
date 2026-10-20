@@ -58,7 +58,7 @@ const rawEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || undefined,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || undefined,
-  TYPESENSE_HOST: process.env.TYPESENSE_HOST || "localhost",
+  TYPESENSE_HOST: process.env.TYPESENSE_HOST || "127.0.0.1",
   TYPESENSE_API_KEY: process.env.TYPESENSE_API_KEY || "xyz",
 };
 
@@ -71,7 +71,7 @@ if (!parsed.success) {
 export const env = parsed.success
   ? parsed.data
   : (envSchema.parse({
-      TYPESENSE_HOST: "localhost",
+      TYPESENSE_HOST: "127.0.0.1",
       TYPESENSE_API_KEY: "xyz",
     }) as z.infer<typeof envSchema>);
 
