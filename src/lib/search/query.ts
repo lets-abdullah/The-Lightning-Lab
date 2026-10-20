@@ -1,6 +1,10 @@
 import "server-only";
 import { typesense, SEARCH_COLLECTION } from "./client";
 import { hitToProduct, type SearchHit } from "./from-hit";
+import { db } from "@/db";
+import { products } from "@/db/schema";
+import { sql, and } from "drizzle-orm";
+import { commerce } from "@/lib/commerce";
 
 export interface SearchFacets {
   collections?: string[];
@@ -128,6 +132,64 @@ export function buildFilterBy(
   return clauses.length > 0 ? clauses.join(" && ") : undefined;
 }
 
+async function searchFromPostgres(
+  rawQuery: string,
+  perPage: number = 24,
+  page: number = 1
+): Promise<SearchHit[]> {
+  try {
+    const clean = rawQuery
+      .replace(/\u00D7/g, "x")
+      .replace(/[^a-zA-Z0-9\s]/g, " ")
+      .trim();
+    const words = clean.split(/\s+/).filter((w) => w.length > 1);
+    if (words.length === 0) return [];
+
+    // All words match title, sku, or shortDescription
+    const andClauses = words.map((w) => {
+      const pat = `%${w}%`;
+      return sql`(${products.title} ILIKE ${pat} OR ${products.sku} ILIKE ${pat} OR ${products.shortDescription} ILIKE ${pat})`;
+    });
+
+    let rows = await db
+      .select({ handle: products.handle })
+      .from(products)
+      .where(and(...andClauses))
+      .limit(perPage)
+      .offset((page - 1) * perPage);
+
+    // If no exact match on all words, try matching title or SKU with any word
+    if (rows.length === 0 && words.length > 1) {
+      const orClauses = words.map((w) => {
+        const pat = `%${w}%`;
+        return sql`(${products.title} ILIKE ${pat} OR ${products.sku} ILIKE ${pat})`;
+      });
+      rows = await db
+        .select({ handle: products.handle })
+        .from(products)
+        .where(sql`(${sql.join(orClauses, sql` OR `)})`)
+        .limit(perPage);
+    }
+
+    if (rows.length === 0) return [];
+
+    const hits: SearchHit[] = [];
+    for (const r of rows) {
+      const fullProd = await commerce.getProduct(r.handle);
+      if (fullProd) {
+        hits.push({
+          product: fullProd,
+          highlight: { title: fullProd.title },
+        });
+      }
+    }
+    return hits;
+  } catch (err) {
+    console.error("[search] DB fallback error:", err);
+    return [];
+  }
+}
+
 export async function searchProducts(input: SearchQueryInput): Promise<SearchResults> {
   try {
     const rawQ = (input.q ?? "").trim();
@@ -205,21 +267,50 @@ export async function searchProducts(input: SearchQueryInput): Promise<SearchRes
       facetCounts[fc.field_name] = fc;
     }
 
-    const found = res.found ?? 0;
+
+
+    let found = res.found ?? 0;
+
+    // Guaranteed Database Fallback: If Typesense returned 0 hits, query Postgres directly!
+    if (hits.length === 0 && rawQ) {
+      const dbHits = await searchFromPostgres(rawQ, perPage, page);
+      if (dbHits.length > 0) {
+        hits.push(...dbHits);
+        found = dbHits.length;
+      }
+    }
+
     const suggestions =
       found === 0 ? ["panel", "strip", "downlight", "high bay", "emergency"] : [];
 
     return {
       found,
       page: res.page ?? page,
-      outOf: res.out_of ?? 0,
-      searchTimeMs: res.search_time_ms ?? 0,
+      outOf: res.out_of ?? found,
+      searchTimeMs: res.search_time_ms ?? 10,
       hits,
       facetCounts,
       suggestions,
     };
   } catch (err) {
-    console.error("searchProducts error:", err);
+    console.error("searchProducts Typesense error, falling back to database:", err);
+    try {
+      const dbHits = await searchFromPostgres(input.q ?? "", input.perPage ?? 24, input.page ?? 1);
+      if (dbHits.length > 0) {
+        return {
+          found: dbHits.length,
+          page: input.page ?? 1,
+          outOf: dbHits.length,
+          searchTimeMs: 20,
+          hits: dbHits,
+          facetCounts: {},
+          suggestions: [],
+        };
+      }
+    } catch (fallbackErr) {
+      console.error("searchProducts DB fallback failed:", fallbackErr);
+    }
+
     return {
       found: 0,
       page: 1,
