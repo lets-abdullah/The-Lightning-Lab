@@ -17,6 +17,7 @@ const CredentialsSchema = z.object({
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   trustHost: true,
+  secret: process.env.AUTH_SECRET || "dev_secret_key_minimum_length_32_characters_long!",
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,

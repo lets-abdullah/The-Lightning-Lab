@@ -2,6 +2,8 @@ import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
 export const authConfig = {
+  trustHost: true,
+  secret: process.env.AUTH_SECRET || "dev_secret_key_minimum_length_32_characters_long!",
   pages: { signIn: "/login", error: "/login" },
   providers: [
     Google({

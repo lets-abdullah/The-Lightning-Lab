@@ -17,8 +17,15 @@ const pool =
   new Pool({
     connectionString: env.DATABASE_URL,
     ssl: isLocal ? false : { rejectUnauthorized: false },
-    connectionTimeoutMillis: 5000,
+    connectionTimeoutMillis: 20000,
+    idleTimeoutMillis: 30000,
+    max: 10,
   });
+
+(pool as any).on?.("error", (err: Error) => {
+  // Prevent unhandled pool idle client errors from crashing the process
+  console.warn("[db] Unexpected error on idle Postgres client:", err.message);
+});
 
 if (process.env.NODE_ENV !== "production") globalForDb.conn = pool;
 
